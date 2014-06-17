@@ -1,0 +1,37 @@
+
+// bloqueos is a array sent from a web2py controller with days to create events (block ) days and hours and minutes as well 
+  events: function(start, end, timezone, callback) {
+        var bloqueos_array = {{=bloqueos}}
+        if (bloqueos_array)
+          var len = bloqueos_array.length;
+        else
+          callback ([]);      
+        var momento_i = moment(start);
+        var momento_f = moment(end);          
+        var bloqueos = [];
+        console.log(bloqueos_array);       
+        while( momento_f.diff(momento_i)){
+          for(i=0; i<len; i=i+1){
+            var len_days = bloqueos_array[i].days.length            
+            for(j=0;j<len_days;j=j+1){
+              if(bloqueos_array[i].days[j] ==  momento_i.day() ){
+                var momento_ti = momento_i.clone();
+                var momento_tf = momento_i.clone();
+                momento_ti.set('hour',bloqueos_array[i].start_hour);
+                momento_ti.set('minutes',bloqueos_array[i].start_min);
+                momento_tf.set('hour',bloqueos_array[i].end_hour);
+                momento_tf.set('minutes',bloqueos_array[i].end_min);
+                bloqueos.push({
+                  title: bloqueos_array[i].title+' '+bloqueos_array[i].recurso,
+                  start: momento_ti.format(),
+                  end: momento_tf.format(),
+                  backgroundColor: bloqueos_array[i].backgroundColor,
+                  allDay: false
+                });                
+              };
+            };          
+          };
+          momento_i.add('days',1); 
+        };           
+        callback(bloqueos);
+     }
